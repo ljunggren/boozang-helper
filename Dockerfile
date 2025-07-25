@@ -1,10 +1,14 @@
+# ---- 1. base image ----
 FROM node:20-slim
 
-# Install only what the script needs in the workdir
-WORKDIR /work
-RUN npm install openai@4
+# ---- 2. working directory inside the image ----
+WORKDIR /app
 
-COPY file_qa.js /usr/local/bin/file_qa
-RUN chmod +x /usr/local/bin/file_qa
+# ---- 3. install only what the script needs, locally ----
+RUN npm install openai@4   # creates /app/node_modules
 
-ENTRYPOINT ["file_qa"]
+# ---- 4. copy your CLI script into the same dir ----
+COPY file_qa.js .
+
+# ---- 5. run it with Node (no global lookup issues) ----
+ENTRYPOINT ["node", "/app/file_qa.js"]
